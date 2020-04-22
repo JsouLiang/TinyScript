@@ -37,10 +37,9 @@ public class PeekIterator<T> implements Iterator<T> {
         if (!stack.isEmpty()) {
             return stack.peek();
         }
-        if (!cache.isEmpty()) {
-            return cache.peekLast();
-        }
-        return null;
+        T res = next();
+        putBack();
+        return res;
     }
 
     /**
