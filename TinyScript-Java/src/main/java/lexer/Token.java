@@ -34,6 +34,7 @@ public class Token {
         String tokenVal = "";
         /// 生成 Token字符串
         while (it.hasNext()) {
+            /// 先取出当前字符查看，如果是 literal 则处理，否则不作处理
             Character lookahead = it.peek();
             if (AlphabetHelper.isLiteral(lookahead)) {
                 tokenVal += lookahead;
@@ -52,6 +53,55 @@ public class Token {
         }
         /// 变量
         return new Token(TokenType.VARIABLE, tokenVal);
+    }
+
+    /**
+     * 使用状态机，提取字符串的值
+     * @param it 字符串流，以" 开头或者' 开头
+     * @return
+     *
+     * state 初始为 0
+     *  0 -> 1  ：状态 0 接受了一个 " 字符
+     *  0 -> 2  ：状态 0 接受一个 ' 字符
+     *
+     *  1 -> 1 : 状态 1 接受一个非“ 的字符
+     *  1 -> str: 状态 1 接受一个 " 字符
+     *
+     *  2 -> 2 : 状态 2 接受一个非' 的字符
+     *  2 -> str : 状态 1 接受一个 ' 字符
+     */
+    public static Token makeString(PeekIterator<Character> it) throws LexicalException{
+        StringBuilder tokenValue = new StringBuilder();
+        int state = 0;
+        while (it.hasNext()) {
+            char currentChar = it.next();
+            switch (state) {
+                case 0:
+                    if (currentChar == '"') {
+                        state = 1;
+                    } else {
+                        state = 2;
+                    }
+                    tokenValue.append(currentChar);
+                    break;
+                case 1:
+                    if (currentChar == '"') {
+                        tokenValue.append(currentChar);
+                        return new Token(TokenType.STRING, tokenValue.toString());
+                    } else {
+                        tokenValue.append(currentChar);
+                    }
+                    break;
+                case 2:
+                    if (currentChar == '\'') {
+                        tokenValue.append(currentChar);
+                        return new Token(TokenType.STRING, tokenValue.toString());
+                    } else {
+                        tokenValue.append(currentChar);
+                    }
+            }
+        }
+        throw new LexicalException("Exception Error");
     }
 
     public String getValue() {

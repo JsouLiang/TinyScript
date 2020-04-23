@@ -30,4 +30,17 @@ public class TokenTests {
         var token4 = Token.makeVarOrKeyword(it2);
         assertToken(token4, "abc", TokenType.VARIABLE);
     }
+
+    @Test
+    public void test_makeString() throws LexicalException {
+        String[] tests = {
+                "\"123\"",
+                "'123'",
+        };
+        for (String test : tests) {
+            PeekIterator<Character> it = new PeekIterator<>(test.chars().mapToObj(c -> (char)c));
+            Token token = Token.makeString(it);
+            assertToken(token, test, TokenType.STRING);
+        }
+    }
 }
