@@ -3,7 +3,7 @@ package lexer;
 import common.PeekIterator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TokenTests {
     void assertToken(Token token, String exceptTokenValue, TokenType exceptTokenType) {
@@ -42,5 +42,57 @@ public class TokenTests {
             Token token = Token.makeString(it);
             assertToken(token, test, TokenType.STRING);
         }
+    }
+
+    @Test
+    public void test_makeOperator() throws LexicalException {
+        var it = new PeekIterator<Character>("+=".chars().mapToObj(c -> (char)c));
+        Token token = Token.makeOperator(it);
+        assertToken(token, "+=", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("+abc".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals('a', it.next());
+        assertToken(token, "+", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("+ xxx".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals(' ', it.next());
+        assertToken(token, "+", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("++mm".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals('m', it.next());
+        assertToken(token, "++", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("/=g".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals('g', it.next());
+        assertToken(token, "/=", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("&=888".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals('8', it.next());
+        assertToken(token, "&=", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("&777".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals('7', it.next());
+        assertToken(token, "&", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("||xx".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals('x', it.next());
+        assertToken(token, "||", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("^=1".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals('1', it.next());
+        assertToken(token, "^=", TokenType.OPERATOR);
+
+        it = new PeekIterator<Character>("%7".chars().mapToObj(c -> (char)c));
+        token = Token.makeOperator(it);
+        assertEquals('7', it.next());
+        assertToken(token, "%", TokenType.OPERATOR);
     }
 }
