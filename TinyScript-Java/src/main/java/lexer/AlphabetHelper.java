@@ -23,6 +23,14 @@ public class AlphabetHelper {
         return ptnNumber.matcher(c+"").matches();
     }
 
+    public static boolean isZero(char c) {
+        return c == '0';
+    }
+
+    public static boolean isDot(char c) {
+        return c == '.';
+    }
+
     public static boolean isLiteral(char c) {
         return ptnLiteral.matcher(c+"").matches();
     }

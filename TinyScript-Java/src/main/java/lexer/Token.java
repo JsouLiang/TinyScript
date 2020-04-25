@@ -104,7 +104,10 @@ public class Token {
         throw new LexicalException("Exception Error");
     }
 
-
+    /**
+     * 使用状态机提取操作符
+     * @param it 字符流
+     */
     public static Token makeOperator(PeekIterator<Character> it) throws LexicalException {
         StringBuilder operator = new StringBuilder();
         int state = 0;
@@ -206,6 +209,91 @@ public class Token {
             }
         }
         throw new LexicalException("Exception");
+    }
+
+    public static Token makeNumber(PeekIterator<Character> it) throws LexicalException {
+        StringBuilder number = new StringBuilder();
+        int state = 0;
+        while (it.hasNext()) {
+            Character currentChar = it.next();
+            number.append(currentChar);
+            switch (state) {
+                case 0: {
+                    if (AlphabetHelper.isNumber(currentChar)) {
+                        if (AlphabetHelper.isZero(currentChar)) {
+                            state = 1;
+                        } else {
+                            state = 2;
+                        }
+                    } else if (currentChar == '-' || currentChar == '+') {
+                        state = 3;
+                    } else if (AlphabetHelper.isDot(currentChar)) {
+                        state = 5;
+                    }
+                    break;
+                }
+                case 1: {
+                    if (AlphabetHelper.isNumber(currentChar)) {
+                        if (AlphabetHelper.isZero(currentChar)) {
+                            state = 1;
+                        } else {
+                            state = 2;
+                        }
+                    } else if (AlphabetHelper.isDot(currentChar)) {
+                        state = 4;
+                    } else {
+                        it.putBack();
+                        number.deleteCharAt(number.length() - 1);
+                        return new Token(TokenType.INTEGER, number.toString());
+                    }
+                    break;
+                }
+                case 2: {
+                    if (AlphabetHelper.isNumber(currentChar)) {
+                        state = 2;
+                    } else if (AlphabetHelper.isDot(currentChar)) {
+                        state = 4;
+                    } else {
+                        it.putBack();
+                        number.deleteCharAt(number.length() - 1);
+                        return new Token(TokenType.INTEGER, number.toString());
+                    }
+                    break;
+                }
+                case 3: {
+                    if (AlphabetHelper.isNumber(currentChar)) {
+                        state = 2;
+                    } else if (AlphabetHelper.isDot(currentChar)) {
+                        state = 5;
+                    } else {
+                        throw new LexicalException("Exception");
+                    }
+                    break;
+                }
+                case 4:
+                case 6: {
+                    if (AlphabetHelper.isNumber(currentChar)) {
+                        state = 6;
+                    } else if (AlphabetHelper.isDot(currentChar)) {
+                        throw  new LexicalException("Exception");
+                    } else {
+                        it.putBack();
+                        number.deleteCharAt(number.length() - 1);
+                        return new Token(TokenType.FLOAT, number.toString());
+                    }
+                    break;
+                }
+                case 5: {
+                    if (AlphabetHelper.isNumber(currentChar)) {
+                        state = 6;
+                    } else {
+                        throw  new LexicalException("Exception");
+                    }
+                    break;
+                }
+            }
+        }
+        throw  new LexicalException("Exception");
     }
 
     public String getValue() {

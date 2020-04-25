@@ -95,4 +95,9 @@ public class TokenTests {
         assertEquals('7', it.next());
         assertToken(token, "%", TokenType.OPERATOR);
     }
+
+    @Test
+    public void test_makeNumber() throws LexicalException {
+
+    }
 }
