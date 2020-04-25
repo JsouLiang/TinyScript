@@ -215,8 +215,7 @@ public class Token {
         StringBuilder number = new StringBuilder();
         int state = 0;
         while (it.hasNext()) {
-            Character currentChar = it.next();
-            number.append(currentChar);
+            Character currentChar = it.peek();
             switch (state) {
                 case 0: {
                     if (AlphabetHelper.isNumber(currentChar)) {
@@ -242,8 +241,6 @@ public class Token {
                     } else if (AlphabetHelper.isDot(currentChar)) {
                         state = 4;
                     } else {
-                        it.putBack();
-                        number.deleteCharAt(number.length() - 1);
                         return new Token(TokenType.INTEGER, number.toString());
                     }
                     break;
@@ -254,8 +251,6 @@ public class Token {
                     } else if (AlphabetHelper.isDot(currentChar)) {
                         state = 4;
                     } else {
-                        it.putBack();
-                        number.deleteCharAt(number.length() - 1);
                         return new Token(TokenType.INTEGER, number.toString());
                     }
                     break;
@@ -277,8 +272,6 @@ public class Token {
                     } else if (AlphabetHelper.isDot(currentChar)) {
                         throw  new LexicalException("Exception");
                     } else {
-                        it.putBack();
-                        number.deleteCharAt(number.length() - 1);
                         return new Token(TokenType.FLOAT, number.toString());
                     }
                     break;
@@ -292,8 +285,10 @@ public class Token {
                     break;
                 }
             }
+            number.append(currentChar);
+            it.next();
         }
-        throw  new LexicalException("Exception");
+        throw new LexicalException("Exception");
     }
 
     public String getValue() {

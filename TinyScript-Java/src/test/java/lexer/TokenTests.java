@@ -98,6 +98,21 @@ public class TokenTests {
 
     @Test
     public void test_makeNumber() throws LexicalException {
+        String[] tests = {
+                "+0 aa",
+                "-0 aa",
+                ".3 ccc",
+                ".5555 ddd",
+                "7789.8888 ooo",
+                "-1000.123123*123123",
+        };
 
+        for(String test:tests) {
+            var it = new PeekIterator<Character>(test.chars().mapToObj(x -> (char)x));
+            var token = Token.makeNumber(it);
+            var splitValue = test.split("[* ]+");
+            assertToken(token, splitValue[0],
+                    (test.indexOf('.') != -1) ? TokenType.FLOAT : TokenType.INTEGER);
+        }
     }
 }
