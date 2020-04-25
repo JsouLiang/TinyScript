@@ -21,7 +21,16 @@ public class PeekIterator<T> implements Iterator<T> {
 
     private Stack<T> stack;
 
+    private T endToken;
+
     private final static int CACHE_SIZE = 10;
+
+    public PeekIterator(Stream<T> stream, T endToken) {
+        iterator = stream.iterator();
+        cache = new LinkedList<>();
+        stack = new Stack<>();
+        this.endToken = endToken;
+    }
 
     public PeekIterator(Stream<T> stream) {
         iterator = stream.iterator();
@@ -36,6 +45,9 @@ public class PeekIterator<T> implements Iterator<T> {
     public T peek() {
         if (!stack.isEmpty()) {
             return stack.peek();
+        }
+        if (!iterator.hasNext()) {
+            return endToken;
         }
         T res = next();
         putBack();
@@ -73,7 +85,7 @@ public class PeekIterator<T> implements Iterator<T> {
     @Override
     public boolean hasNext() {
         /// 如果栈中有值，说明被 putBack 过
-        return !stack.isEmpty() || iterator.hasNext();
+        return endToken != null || !stack.isEmpty() || iterator.hasNext();
     }
 
     @Override
@@ -82,6 +94,12 @@ public class PeekIterator<T> implements Iterator<T> {
         if (!stack.isEmpty()) {
             val = stack.pop();
         } else {
+            /// 所有字符已经取尽
+            if (!iterator.hasNext()) {
+                T temp = endToken;
+                endToken = null;
+                return temp;
+            }
             val = iterator.next();
         }
 

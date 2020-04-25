@@ -299,4 +299,12 @@ public class Token {
     public String toString() {
         return String.format("type: %s, value %s", type, value);
     }
+
+    public boolean isNumber() {
+        return type == TokenType.FLOAT || type == TokenType.INTEGER;
+    }
+
+    public boolean isOperator() {
+        return type == TokenType.OPERATOR;
+    }
 }
