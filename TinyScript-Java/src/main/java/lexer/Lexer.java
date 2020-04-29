@@ -86,7 +86,6 @@ public class Lexer {
                 if (AlphabetHelper.isOperator(currentChar)) {
                     it.putBack();
                     tokens.add(Token.makeOperator(it));
-                    continue;
                 }
             }
         } catch (LexicalException exception) {
