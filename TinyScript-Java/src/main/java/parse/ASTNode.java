@@ -43,6 +43,7 @@ public abstract class ASTNode {
         if (children == null) {
             children = new ArrayList<>();
         }
+        node.parent = this;
         children.add(node);
     }
 
@@ -52,5 +53,26 @@ public abstract class ASTNode {
 
     public void setChildren(List<ASTNode> children) {
         this.children = children;
+    }
+
+    public void setLexeme(Token lexeme) {
+        this.lexeme = lexeme;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setType(ASTNodeType nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    public ASTNodeType getType() {
+        return this.nodeType;
+    }
+
+    public void print(int indent) {
+//        StringUtils.leftPad(" ", indent * 2)
+//        System.out.println();
     }
 }
